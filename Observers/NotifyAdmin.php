@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inchoo\FAQNotification\Observers;
 
 use Magento\Catalog\Model\ProductRepository;
@@ -12,6 +14,31 @@ use Magento\Store\Model\StoreManagerInterface;
 class NotifyAdmin implements \Magento\Framework\Event\ObserverInterface
 {
     const ADMIN_NOTIFICATION_EMAIL = 'admin@example.com';
+
+    /**
+     * @var Session
+     */
+    protected $customerSession;
+
+    /**
+     * @var ProductRepository
+     */
+    protected $productRepository;
+
+    /**
+     * @var TransportBuilder
+     */
+    protected $transportBuilder;
+
+    /**
+     * @var Escaper
+     */
+    protected $escaper;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
 
     public function __construct(
         Session $customerSession,
@@ -27,15 +54,20 @@ class NotifyAdmin implements \Magento\Framework\Event\ObserverInterface
         $this->storeManager = $storeManager;
     }
 
-    public function execute(Observer $observer)
+    /**
+     * @param Observer $observer
+     * @return $this|void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\MailException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function execute(Observer $observer): NotifyAdmin
     {
-        $eventData = $observer->getData('question');
-        $productId = $eventData->getProductId();
-        $faqId = $eventData->getFaqId();
-        $message = $eventData->getQuestionContent();
-        $storeId = $eventData->getStoreid();
+        $questionData = $observer->getData('question');
+        $productId = $questionData->getProductId();
+        $message = $questionData->getQuestionContent();
 
-        $product = $this->getProduct($productId);
+        $product = $this->productRepository->getById($productId);
         $senderEmail = $this->getUserEmail();
 
         $sender = [
@@ -72,22 +104,24 @@ class NotifyAdmin implements \Magento\Framework\Event\ObserverInterface
         return $this;
     }
 
-    /** helper methods */
-    protected function getProduct($productId)
-    {
-        $product = $this->productRepository->getById($productId);
-
-        return $product;
-    }
-
-    protected function getUserName()
+    /**
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    protected function getUserName(): string
     {
         return $this->customerSession->getCustomerData()->getFirstname() .
             ' ' .
             $this->customerSession->getCustomerData()->getLastName();
     }
 
-    protected function getUserEmail()
+    /**
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    protected function getUserEmail(): string
     {
         return $this->customerSession->getCustomerData()->getEmail();
     }
