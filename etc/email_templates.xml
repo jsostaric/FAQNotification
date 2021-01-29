@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="product_faq_notification" label="FAQ Question Submitted" file="faq_notification.html" type="html" module="Inchoo_FAQNotification" area="frontend"/>
+</config>

@@ -1,0 +1,28 @@
+{
+    "name": "inchoo/module-faqnotification",
+    "description": "N/A",
+    "type": "magento2-module",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
+    "require": {
+        "php": "~7.3.0|~7.4.0",
+        "magento/framework": "",
+        "magento/module-backend": "",
+        "magento/module-customer": "",
+        "magento/module-catalog": "",
+        "magento/module-cms": "",
+        "magento/module-ui": "",
+        "magento/module-store": "",
+        "inchoo/module-productfaq": ""
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Inchoo\\FAQNotification\\": ""
+        }
+    }
+}
